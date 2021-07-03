@@ -5,16 +5,26 @@ from django.utils import timezone
 import uuid
 from django.urls import reverse
 #import datetime
-
-class Lecturer(User):
+# 
+# class Lecturer(User):
     
 
-    class Meta:
-        proxy = True
+#     class Meta:
+#         proxy = True
+
 # Create your models here.
+
+
+class Supervisors(models.Model):
+   description= models.CharField(default="",max_length=50)
+
 class Aset(models.Model):
 
-    asetid = models.CharField( max_length=4)
+    asetid = models.CharField( max_length=4,primary_key=True)
+    MinimumGraduatingUnit= models.SmallIntegerField(default=0)
+    MinimumCompulsoryUnit= models.SmallIntegerField(default=0)
+    MinimumElectiveUnit= models.SmallIntegerField(default=0)
+    MinimumRequiredUnit= models.SmallIntegerField(default=0)
     description= models.CharField(default="",max_length=50)
 
     def __str__(self):
@@ -23,27 +33,27 @@ class Aset(models.Model):
 class Asession(models.Model):
     aset = models.ForeignKey(Aset,on_delete=models.DO_NOTHING)
     asessionid = models.CharField( max_length=9)
+  
+
     description= models.CharField(default="",max_length=50)
 
     def __str__(self):
-      return self.asetid
+      return f"{self.aset.asetid}  , {self.asessionid }"
 
 class Asemester(models.Model):
-    aset = models.ForeignKey(Asession,on_delete=models.DO_NOTHING)
+    asession = models.ForeignKey(Asession,on_delete=models.DO_NOTHING)
     semesterid = models.CharField( max_length=1)
     semestername = models.CharField( max_length=20)
     description= models.CharField(default="",max_length=50)
 
     def __str__(self):
-      return self.asetid
+      return f"{self.asession.aset.asetid } ,  {self.asession.asessionid } ,{self.semesterid } {self.semestername }"
 
 
-
-class Biodata(models.Model):
-
-    matricno = models.CharField(max_length=20)
+class Student(models.Model):
+    matricno = models.CharField(max_length=20,primary_key=True)
     studentGuId  = models.UUIDField( default= uuid.uuid4)
-    asetid = models.ForeignKey(Aset,on_delete=models.DO_NOTHING)
+    aset = models.ForeignKey(Aset,on_delete=models.DO_NOTHING)
     asession= models.CharField(max_length=9)
     faculty= models.CharField(max_length=30)
     department= models.CharField(max_length=40)
@@ -55,6 +65,13 @@ class Biodata(models.Model):
     firstname= models.CharField(max_length=30)
     presentstate= models.CharField(max_length=20)#student,graduate,suspended,leave,withdraw
     graduatingsession= models.CharField(max_length=9)
+ 
+    def __str__(self):
+        return  f"{self.matricno} : {self.surname} {self.middlename} {self.firstname }"
+
+
+class Biodata(models.Model):
+    student = models.OneToOneField(Student,on_delete=models.DO_NOTHING)
     emailaddress= models.CharField(max_length=40)
     phonenumber= models.CharField(max_length=40)
     fieldofinterest= models.CharField(max_length=40)
@@ -81,14 +98,10 @@ class Biodata(models.Model):
         #return reverse("Biodata_detail", args=[ self.id])
 
 
-class Student(models.Model):
-    biodata = models.OneToOneField(Biodata,on_delete=models.DO_NOTHING)
-    matricno = models.CharField(max_length=20,primary_key=True)
-
 
 class StudentDocument(models.Model):
      student = models.ForeignKey(Student,on_delete=models.DO_NOTHING)
-     document = models.FileField();
+     document = models.FileField(upload_to="mscdocuments",null=True);
      dateuploaded= models.DateField('Payment Date',default=timezone.now())
      thesessionofinterest= models.CharField(max_length=9)
      description= models.CharField(default="",max_length=50)
@@ -98,40 +111,55 @@ class StudentDocument(models.Model):
 
 
 class Course(models.Model):
-    semester = models.ForeignKey(Asemester,on_delete=models.DO_NOTHING)
-    coursecode = models.CharField(max_length= 6)
-    coursename = models.CharField(max_length= 30)
-    coursenature = models.CharField(max_length= 1)# compulsory , elective ,require
-    passmark = models.IntegerField()
-    courseunit = models.IntegerField();
-    courseGuId  = models.UUIDField( default= uuid.uuid4)
+    Required='R'
+    Elective='E'
+    Compulsory='R'
+    
+    Course_CHOICES=[
+        (Required,'Required'),
+        (Elective,'Elective'),
+        (Compulsory,'Compulsory'),
+       
+    ]
+    asemester     = models.ForeignKey(Asemester,on_delete=models.DO_NOTHING)
+    coursecode   = models.CharField(max_length= 6)
+    courselevel   = models.CharField(max_length= 1,default=0)
+    coursename   = models.CharField(max_length= 30)
+    coursenature = models.CharField(max_length= 1,choices=Course_CHOICES)# compulsory , elective ,require
+    passmark     = models.IntegerField(default=40)
+    courseunit   = models.IntegerField(default=0)
+    courseGuId   = models.UUIDField( default= uuid.uuid4)
+
+    def __str__(self):
+       return f"{self.coursename} @ {self.asemester.asession.asessionid } ,{self.asemester.semesterid } Level : {self.courselevel} "
 
 
 class RegisteredCourse(models.Model):
-    coursetoRegister = models.ManyToManyField(Course,related_name="toregister")
-    registeredCourses = models.ManyToManyField(Course,related_name="alreadyregistered")
+    #coursetoRegister = models.ForeignKey(Course,on_delete=models.DO_NOTHING,related_name="toregister")      
+    #registeredCourses = models.ForeignKey(Course,on_delete=models.DO_NOTHING,related_name="alreadyregistered")      
+    coursetoRegister = models.CharField(max_length= 300)
+    registeredCourses = models.CharField(max_length= 300)
+    
     student = models.ForeignKey(Student,on_delete=models.DO_NOTHING)         
     dateregistered =  models.DateField('Registered Date',default=timezone.now())
     status = models.CharField(max_length=20)
     totalregisteredunit = models.SmallIntegerField()
     maxpossibleunit = models.SmallIntegerField()
     minpossibleunit = models.SmallIntegerField()
+    asession = models.ForeignKey(Asession,on_delete=models.DO_NOTHING) 
 
-class Supervisors(models.Model):
-      student = models.ManyToManyField(Student) 
-      supervisor = models.ManyToManyField(Lecturer)  
 
 class SessionRegistration(models.Model):
-    student = models.ManyToManyField(Student) 
+    student = models.ForeignKey(Student,on_delete=models.DO_NOTHING)
     aset = models.ForeignKey(Asession,on_delete=models.DO_NOTHING)
 
 
 class DetailResult(models.Model):
-     student = models.ManyToManyField(Student) 
-     course = models.ManyToManyField(Course)
+     student = models.ForeignKey(Student,on_delete=models.DO_NOTHING)
+     course = models.ForeignKey(Course,on_delete=models.DO_NOTHING)
      score  = models.SmallIntegerField()
      readonly = models.BooleanField(default=False)
      passed = models.BooleanField(default=False)
      donedate =  models.DateField('Registered Date',default=timezone.now())
-     theuser  = models.ManyToManyField(Lecturer)     
+#     theuser  = models.ForeignKey(Lecturer,on_delete=models.DO_NOTHING)  
  

@@ -1,0 +1,103 @@
+
+{%extends 'ResultApp/base.html'%}
+
+{%block title%}
+<title>Add New Courses </title>
+{%endblock%}
+
+{%block content%}
+
+<div class="container">
+  <div class="row">
+            <div class="col-md-4">
+  
+<!-- Card -->
+<div class="card card-cascade">
+
+  <!-- Card image -->
+  <div class="view view-cascade gradient-card-header blue-gradient">
+
+    <!-- Title -->
+    <h2 class="card-header-title mb-3">ADD NEW COURSES</h2>
+    <!-- Subtitle -->
+    <p class="card-header-subtitle mb-0">............</p>
+
+  </div>
+
+  <!-- Card content -->
+  <div class="card-body card-body-cascade text-center">
+
+
+
+              {% load crispy_forms_tags %}
+                <form method='POST'>
+                        {%csrf_token%}
+                        {{ form |crispy}}
+                        <input type='submit' value ='Save'/>
+                </form>
+
+    <hr>
+
+    <!-- Twitter -->
+    <a class="px-2 fa-lg tw-ic"><i class="fab fa-twitter"> </i></a>
+    <!-- Linkedin -->
+    <a class="px-2 fa-lg li-ic"><i class="fab fa-linkedin-in"> </i></a>
+    <!-- Facebook -->
+    <a class="px-2 fa-lg fb-ic"><i class="fab fa-facebook-f"> </i></a>
+    <!-- Email -->
+    <a class="px-2 fa-lg email-ic"><i class="fas fa-envelope"> </i></a>
+
+  </div>
+
+</div>
+<!-- Card -->
+            </div>
+            <div class="col-md-8">
+ 
+<!-- Card -->
+<div class="card card-cascade">
+
+  <!-- Card image -->
+  <div class="view view-cascade gradient-card-header blue-gradient">
+
+    <!-- Title -->
+    <h2 class="card-header-title mb-3">AVAILABLE COURSES</h2>
+    <!-- Subtitle -->
+    <p class="card-header-subtitle mb-0">........</p>
+
+  </div>
+
+  <!-- Card content -->
+  <div class="card-body card-body-cascade text-left">
+
+    <!-- Text -->
+   <ul> 
+ {%for crs in  allcourses%}
+   <li>{{crs.coursecode}}=={{crs.coursename}} =={{crs.courselevel}}</li>
+ {% endfor %}
+<ul>
+    <hr>
+
+    <!-- Twitter -->
+    <a class="px-2 fa-lg tw-ic"><i class="fab fa-twitter"> </i></a>
+    <!-- Linkedin -->
+    <a class="px-2 fa-lg li-ic"><i class="fab fa-linkedin-in"> </i></a>
+    <!-- Facebook -->
+    <a class="px-2 fa-lg fb-ic"><i class="fab fa-facebook-f"> </i></a>
+    <!-- Email -->
+    <a class="px-2 fa-lg email-ic"><i class="fas fa-envelope"> </i></a>
+
+  </div>
+
+</div>
+<!-- Card -->           
+            </div>
+    
+  </div>
+</div>
+
+
+
+
+
+{%endblock%}

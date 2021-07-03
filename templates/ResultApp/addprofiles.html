@@ -1,0 +1,54 @@
+{%extends 'ResultApp/base.html'%}
+
+{%block title%}
+<title>Create Students Data</title>
+{%endblock%}
+
+{%block content%}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">.</div>
+    <div class="col-md-6">
+<!--Card-->
+<div class="card mdb-color lighten-4 text-center z-depth-2 light-version py-4 px-5">
+<div class="card-header">Select the file to upload..</div>
+  <form action='/addprofiles' method='POST' enctype='multipart/form-data' class="md-form">
+   {% csrf_token %}
+     <div class="form-group">
+   Year of Entry :
+    <select class="form-control"  name ="asetid" id="exampleFormControlSelect1">
+      {%for oneset in allset%}
+      <option>{{oneset.asetid}}</option>
+      {% endfor %}
+
+
+      
+   
+    </select>
+    
+  </div>
+    <div class="file-field">
+      <a class="btn-floating peach-gradient mt-0 float-left">
+        <i class="fas fa-paperclip" aria-hidden="true"></i>
+        <input type="file" name='profilefile'>
+      </a>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text" placeholder="Upload your file">
+      </div> 
+ 
+    </div>
+    <div class="card-footer text-muted">2 days ago</div>
+    <button type="submit" class="btn btn-default btn-rounded">Upload...</button>
+
+    </form>
+ 
+ </div>
+<!--/.Card-->
+
+    </div>
+    <div class="col-md-3">.</div>
+  </div>
+</div>
+
+{%endblock%}

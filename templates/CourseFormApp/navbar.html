@@ -90,8 +90,8 @@
               </li>
               <li><a class="collapsible-header waves-effect" href="{% url 'addprofiles' %}"><i class="fas fa-pencil-alt"></i>Update Student Profile</a></li>
              
-              <li><a class="collapsible-header waves-effect" href="{% url 'course_create' %}"><i class="fas fa-newspaper"></i>Fill Course Form</a></li>
-              <li><a class="collapsible-header waves-effect"  href="{% url 'generate_courseregistration_data' %}"><i class="fas fa-desktop"></i>Upload Payment Receipt</a></li>
+              <li><a class="collapsible-header waves-effect" href="{% url 'fillcourse_form' %}"><i class="fas fa-newspaper"></i>Fill Course Form</a></li>
+              <li><a class="collapsible-header waves-effect"  href="{% url 'fillcourse_form' %}"><i class="fas fa-desktop"></i>Upload Payment Receipt</a></li>
             </ul>
           </li>
           <!--/. Side navigation links -->
@@ -107,7 +107,7 @@
         </div>
         <!-- Breadcrumb-->
         <div class="breadcrumb-dn mr-auto">
-          <p>MSC Student   @2021.............Welcome   {{request.user}}</p>
+          <p>MSC Student   @2021.............Welcome   {{names}}</p>
         </div>
         <ul class="nav navbar-nav nav-flex-icons ml-auto">
           <li class="nav-item">

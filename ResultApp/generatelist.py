@@ -23,42 +23,58 @@ def generatelist(excel_file,asetid):
                         #         matricno = matricno,  
                         #         studentGuId  =  uuid.uuid4(),
                         #         asetid = myaset,    
-                        #         asession= '',   
-                        #         faculty= '',    
-                        #         department= '',
-                        #         programme= '',  
-                        #         applicationnumber= '',
-                        #         formno= '',     
-                        #         surname= '',  
-                        #         middlename= '', 
-                        #         firstname='',
-                        #         presentstate= '',#student,graduate,suspended,leave,withdraw
-                        #         graduatingsession=''})    
+                        asession= ws.cell(i, 2).value
+                        faculty=  ws.cell(i, 3).value    
+                        department=  ws.cell(i, 4).value
+                        programme=  ws.cell(i, 5).value  
+                        option = ws.cell(i, 6).value 
 
-                        obj,created= Student.objects.get_or_create(    
+                        applicationnumber=  ws.cell(i, 7).value
+                        formno=  ws.cell(i,8).value     
+                        surname=  ws.cell(i, 9).value  
+                        middlename=  ws.cell(i, 10).value 
+                        firstname= ws.cell(i, 11).value
+                        presentstate=  ws.cell(i, 12).value
+                        emailaddress= ws.cell(i, 13).value
+                        phonenumber=  ws.cell(i, 14).value
+                        # #student,graduate,suspended,leave,withdraw
+                        #         graduatingsession=''})    
+                        try :
+                         obj,created= Student.objects.get_or_create(    
                                 matricno = matricno, 
                                 defaults={ 
                                 'studentGuId'  :  uuid.uuid4(),
-                                'asetid' : myaset,    
-                                'asession': '',   
-                                'faculty': '',    
-                                'department': '',
-                                'programme': '',  
-                                'applicationnumber': '',
-                                'formno': '',     
-                                'surname': '',  
-                                'middlename': '', 
-                                'firstname':'',
-                                'presentstate': '',#student,graduate,suspended,leave,withdraw
-                                'graduatingsession':''})   
+                                'aset' : myaset,    
+                                'asession': asession,   
+                                'faculty': faculty,    
+                                'department': department,
+                                'programme': programme,  
+                                'option':option,
+                                'applicationnumber': applicationnumber,
+                                'formno': formno,     
+                                'surname': surname,  
+                                'middlename': middlename, 
+                                'firstname':firstname,
+                                'presentstate': presentstate,#student,graduate,suspended,leave,withdraw
+                                'emailaddress':emailaddress,
+                                'phonenumber':phonenumber,
+                                'password':matricno,
+                                'graduatingsession':''})  
+                        except Exception as inst:
+                            print("I  raise error on => ", matricno)
+                            print(inst) 
+                         
+
+
                         if created :
                             studentlist.append(obj)
                         else:
                             existinglist.append(obj)
                         #ns.save()
+                        print(obj)
                         
     except  Exception as inst:
-          print("I am raise error => ", matricno)
+          print("I  raise error on => ", matricno)
           print(inst)   
                          
     return studentlist, existinglist

@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-
 import uuid
 from django.urls import reverse
 #import datetime
@@ -19,7 +18,6 @@ class Supervisors(models.Model):
    description= models.CharField(default="",max_length=50)
 
 class Aset(models.Model):
-
     asetid = models.CharField( max_length=4,primary_key=True)
     MinimumGraduatingUnit= models.SmallIntegerField(default=0)
     MinimumCompulsoryUnit= models.SmallIntegerField(default=0)
@@ -31,14 +29,12 @@ class Aset(models.Model):
       return self.asetid
 
 class Asession(models.Model):
-    aset = models.ForeignKey(Aset,on_delete=models.DO_NOTHING)
+    #aset = models.ForeignKey(Aset,on_delete=models.DO_NOTHING)
     asessionid = models.CharField( max_length=9)
-  
-
     description= models.CharField(default="",max_length=50)
 
     def __str__(self):
-      return f"{self.aset.asetid}  , {self.asessionid }"
+      return f"{self.asessionid }"
 
 class Asemester(models.Model):
     asession = models.ForeignKey(Asession,on_delete=models.DO_NOTHING)
@@ -51,6 +47,15 @@ class Asemester(models.Model):
 
 
 class Student(models.Model):
+   
+    presentstate_CHOICES=[
+        ('STUDENT','STUDENT'),
+        ('GRADUATE','GRADUATE'),
+        ('SUSPENDED','SUSPENDED'),
+        ('LEAVE','LEAVE'),
+        ('WITHDRAW','WITHDRAW'),
+       ('ABSENT','ABSENT'),
+    ]
     matricno = models.CharField(max_length=20,primary_key=True)
     studentGuId  = models.UUIDField( default= uuid.uuid4)
     aset = models.ForeignKey(Aset,on_delete=models.DO_NOTHING)
@@ -58,23 +63,24 @@ class Student(models.Model):
     faculty= models.CharField(max_length=30)
     department= models.CharField(max_length=40)
     programme= models.CharField(max_length=40)
+    option= models.CharField(max_length=40 ,default="A")
     applicationnumber= models.CharField(max_length=20)
     formno= models.CharField(max_length=20)
     surname= models.CharField(max_length=30)
-    middlename= models.CharField(max_length=30)
+    middlename= models.CharField(max_length=30 ,default ='' ,blank=True)
     firstname= models.CharField(max_length=30)
-    presentstate= models.CharField(max_length=20)#student,graduate,suspended,leave,withdraw
+    presentstate= models.CharField(max_length=20,choices= presentstate_CHOICES)#student,graduate,suspended,leave,withdraw
     graduatingsession= models.CharField(max_length=9)
- 
+    emailaddress= models.EmailField(max_length=50,default='MscDefault@ui.ng')
+    phonenumber= models.CharField(max_length=40, default='234')
+    password= models.CharField(max_length=50,default='000')
     def __str__(self):
         return  f"{self.matricno} : {self.surname} {self.middlename} {self.firstname }"
 
 
 class Biodata(models.Model):
-    student = models.OneToOneField(Student,on_delete=models.DO_NOTHING)
-    emailaddress= models.CharField(max_length=40)
-    phonenumber= models.CharField(max_length=40)
-    fieldofinterest= models.CharField(max_length=40)
+    student = models.OneToOneField(Student,on_delete=models.DO_NOTHING)  
+    fieldofinterest= models.CharField(max_length=60)
     contactaddress= models.CharField(max_length=50)
     nationality= models.CharField(max_length=30)
     state= models.CharField(max_length=30)
@@ -147,6 +153,10 @@ class RegisteredCourse(models.Model):
     maxpossibleunit = models.SmallIntegerField()
     minpossibleunit = models.SmallIntegerField()
     asession = models.ForeignKey(Asession,on_delete=models.DO_NOTHING) 
+
+    def __str__(self):
+       return f"{self.student.matricno} "
+       #@ {self.asemester.asession.asessionid } ,{self.asemester.semesterid } Level : {self.courselevel} "
 
 
 class SessionRegistration(models.Model):

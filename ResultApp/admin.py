@@ -16,16 +16,16 @@ admin.site.register(Student)
 
 
 
-class AsessionInline(admin.TabularInline):
-     model = Asession
-     extra=3
+# class AsessionInline(admin.TabularInline):
+#      model = Asession
+#      extra=3
 
 
-class AsetAdmin(admin.ModelAdmin):
-    #   fieldsets = [(None,{'fields':['PropertyName']}),
-    #   ('Property Description ',{'fields':['PropertyDescription'],'classes':['collapse']}),     ]
-      inlines= [AsessionInline]
+# class AsetAdmin(admin.ModelAdmin):
+#     #   fieldsets = [(None,{'fields':['PropertyName']}),
+#     #   ('Property Description ',{'fields':['PropertyDescription'],'classes':['collapse']}),     ]
+#       inlines= [AsessionInline]
 
 
-admin.site.register(Aset,AsetAdmin)
+# admin.site.register(Aset,AsetAdmin)
 

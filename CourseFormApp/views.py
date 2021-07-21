@@ -1,7 +1,7 @@
 import json
 from ResultApp.models import Asession, Aset, RegisteredCourse, Student
 from django.shortcuts import render
-from  CourseFormApp.BreakIntoCoursesToRegister import BreakIntoCourselist
+from  CourseFormApp.BreakIntoCoursesToRegister import BreakIntoCourselist ,ExtractSelectedCourses
 
 # Create your views here.
 def homepage(response):
@@ -41,6 +41,7 @@ def fillcourse_form(request):
         print(request.POST)
         # Determine the button pressed and then load RegisteredCourse 
         load = request.POST.get('loadbtn','Notloaded') 
+        
         print(load)  
         if(load=='loadbtn'):
             thesession=request.POST.get('thesession','NoSession')  
@@ -55,7 +56,7 @@ def fillcourse_form(request):
                 data=RegisteredCourse.objects.get(student__matricno=matric,asession__asessionid =thesession)  
                 #data=RegisteredCourse.objects.get(student__matricno=matric)
                 allcourses= BreakIntoCourselist(data.coursetoRegister,12)
-                
+                request.session['coursetoRegister'] = allcourses 
                 print(data.coursetoRegister)  
             except Exception as m:  
                 print (m )     
@@ -65,6 +66,13 @@ def fillcourse_form(request):
         print(saveselection)
 
         if(saveselection=='saveselectionbtn'):#
+            str1=""
+            print('DEALING WITH POST-saveselectionbtn data below ')     
+            print(request.POST)
+            selectedcourses=ExtractSelectedCourses(request.POST,request.session['coursetoRegister'])
+            print('FROM THE VIEW')
+            print(str1.join(selectedcourses))
+            data=RegisteredCourse.objects.get(student__matricno=matric,asession__asessionid =thesession) 
             return render(request,'CourseFormApp/fillcourse_form.html' ,{ 'error':'Nothing to save for now '})           
 
  

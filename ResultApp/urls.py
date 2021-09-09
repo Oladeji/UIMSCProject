@@ -10,6 +10,7 @@ urlpatterns = [
     path('generate_courseregistration_data',views.generate_courseregistration_data,name='generate_courseregistration_data'),
     path('importStudents',views.importStudents,name='importStudents'),
     path('addprofiles',views.CreateStudentProfile.as_view(),name='addprofiles'),
+    path('download_process_registered_courses',views.download_process_registered_courses,name='download_process_registered_courses'),
     
     ]
  

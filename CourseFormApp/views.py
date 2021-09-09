@@ -15,7 +15,7 @@ def fillcourse_form(request):
     print(request.session['matricno'] )
 
     if(not request.session['matricno']):  
-       print(request.session['matricno'] )
+       print("Matric Number not found in session")
        return render(request,'CourseFormApp/fillcourse_form.html' ,context)
     matric =request.session['matricno']
 
@@ -56,7 +56,8 @@ def fillcourse_form(request):
                 data=RegisteredCourse.objects.get(student__matricno=matric,asession__asessionid =thesession)  
                 #data=RegisteredCourse.objects.get(student__matricno=matric)
                 allcourses= BreakIntoCourselist(data.coursetoRegister,12)
-                request.session['coursetoRegister'] = allcourses 
+                request.session['coursetoRegister'] = allcourses
+                request.session['thesession'] = thesession 
                 print(data.coursetoRegister)  
             except Exception as m:  
                 print (m )     
@@ -65,15 +66,39 @@ def fillcourse_form(request):
         saveselection = request.POST.get('saveselectionbtn','Notsaveselectionbtn') 
         print(saveselection)
 
-        if(saveselection=='saveselectionbtn'):#
+        if(saveselection=='saveselectionbtn'):
             str1=""
             print('DEALING WITH POST-saveselectionbtn data below ')     
             print(request.POST)
-            selectedcourses=ExtractSelectedCourses(request.POST,request.session['coursetoRegister'])
+            selectedcourses,totalunit=ExtractSelectedCourses(request.POST,request.session['coursetoRegister'])
             print('FROM THE VIEW')
-            print(str1.join(selectedcourses))
-            data=RegisteredCourse.objects.get(student__matricno=matric,asession__asessionid =thesession) 
-            return render(request,'CourseFormApp/fillcourse_form.html' ,{ 'error':'Nothing to save for now '})           
+            finalcourses=str1.join(selectedcourses)
+
+            if(not request.session['matricno']):  
+               print("Matric Number lost before saving selected course")
+               return render(request,'CourseFormApp/fillcourse_form.html' ,context)
+            matric =request.session['matricno']
+
+            if(not request.session['thesession']):  
+               print("Selected Session lost before saving selected course")
+               return render(request,'CourseFormApp/fillcourse_form.html' ,context)
+            thesession =request.session['thesession']
+
+            data= RegisteredCourse.objects.get(student__matricno=matric,asession__asessionid =thesession)
+            #.update("registeredCourses") 
+            data.registeredCourses=finalcourses
+            data.status="FINAL"
+            data.totalregisteredunit=totalunit
+            data.save()
+            print("Finished succesfully")
+            data= RegisteredCourse.objects.get(student__matricno=matric,asession__asessionid =thesession)
+            # mystudent= data.student
+            # print(mystudent)
+            # print(type(mystudent))
+            # print(mystudent.surname)
+            # print(mystudent.matricno)
+            # print(data)
+            return render(request,'CourseFormApp/course_form_filled.html' ,{ 'data':data,'student':data.student})           
 
  
 

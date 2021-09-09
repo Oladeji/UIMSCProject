@@ -137,7 +137,7 @@ class Course(models.Model):
     courseGuId   = models.UUIDField( default= uuid.uuid4)
 
     def __str__(self):
-       return f"{self.coursename} @ {self.asemester.asession.asessionid } ,{self.asemester.semesterid } Level : {self.courselevel} "
+       return f"{self.coursecode} =>  {self.coursename} @ {self.asemester.asession.asessionid } ,{self.asemester.semesterid } Level : {self.courselevel} "
 
 
 class RegisteredCourse(models.Model):
@@ -170,6 +170,8 @@ class DetailResult(models.Model):
      score  = models.SmallIntegerField()
      readonly = models.BooleanField(default=False)
      passed = models.BooleanField(default=False)
-     donedate =  models.DateField('Registered Date',default=timezone.now())
+     donedate =  models.DateField('Created Date',default=timezone.now())
+     registeredDate =  models.DateField('Registered Date',default=timezone.now())
+     asemester     = models.ForeignKey(Asemester,on_delete=models.DO_NOTHING)
 #     theuser  = models.ForeignKey(Lecturer,on_delete=models.DO_NOTHING)  
  
